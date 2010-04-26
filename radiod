@@ -1,0 +1,48 @@
+#!/usr/bin/perl
+# radiod
+
+use strict;
+use Proc::Daemon;
+
+my $APP = 'radiod';
+my $DEBUG = undef;
+my $cmd = 'mplayer -cache 300';
+my $cmdOpts = '-slave -input file=$HOME/.mplayer/fifo';
+
+
+require './channels';
+our %channels;
+
+usage();
+print 'Station: ';
+my $choice = <STDIN>;
+chomp($choice);
+
+my @urlholder; #cant use a scalar
+for my $cname(keys(%channels)) {
+  for my $url(keys(%{$channels{$cname}})) {
+      push(@urlholder, $channels{$choice}{$url});
+    }
+}
+print << "NOTE";
+Daemonizing, bye...
+
+If you want me something, you can give me commands through
+the named pipe.
+NOTE
+Proc::Daemon::Init;
+system("$cmd $cmdOpts @urlholder") == 0 or die;
+
+sub usage {
+  my %channellist;
+  for my $cname(keys(%channels)) {
+    for my $longname(keys(%{$channels{$cname}})) {
+      $channellist{$longname} = $cname;
+    }
+  }
+  foreach my $cname(sort{$a cmp $b} keys %channellist) {
+    printf("\033[36;1m%17s\033[0m | \033[31m%s\033[0m\n",
+      $cname, $channellist{$cname});
+  }
+}
+
