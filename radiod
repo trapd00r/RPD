@@ -1,16 +1,15 @@
 #!/usr/bin/perl
 # radiod
-
 use strict;
 use Proc::Daemon;
 
 my $APP = 'radiod';
-my $DEBUG = undef;
+my $DEBUG = 1;
 my $cmd = 'mplayer -cache 300';
 my $cmdOpts = '-slave -input file=$HOME/.mplayer/fifo';
 
-
-require './channels';
+#require "$ENV{HOME}/.config/radiod/channels";
+require "./channels" if $DEBUG;
 our %channels;
 
 usage();
