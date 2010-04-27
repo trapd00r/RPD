@@ -1,6 +1,9 @@
 radiod
 ===========
-Daemon using mplayer for playing radio streams
+radiod: Daemon using mplayer for playing radio streams
+
+radioc: Client for talking to the daemon; change stream, pause, 
+change volume etc
 
 License
 =======
