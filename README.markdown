@@ -11,7 +11,7 @@ Copy the channel list to $XDG_CONFIG_HOME/radiod/channels
 (usually $HOME/.config/radiod/channels) and place the daemon and client
 somewhere in your $PATH (/usr/bin, $HOME/bin or so). 
 Make sure that you have a named pipe in $HOME/.mplayer/ named 'fifo'.
-You can create on with;
+You can create one with;
     $ mkfifo $HOME/.mplayer/fifo
 Full command for lazy people;
     git clone git@github.com:trapd00r/radiod.git \ 
