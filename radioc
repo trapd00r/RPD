@@ -1,0 +1,60 @@
+#!/usr/bin/perl
+# radioc - client for radiod
+use strict;
+use Data::Dumper;
+
+my $choice = shift;
+my $load_choice = shift or 'dg'; # din gata
+chomp($choice);
+chomp($load_choice);
+my $fifo = "$ENV{HOME}/.mplayer/fifo";
+require "$ENV{HOME}/.config/radiod/channels";
+our %channels;
+my %commands = (
+  quit    => 'quit',
+  stop    => 'stop',
+  pause   => 'pause',
+  son     => 'mute 0',
+  soff    => 'mute 1',
+  codec   => 'get_audio_codec',
+  bitrate => 'get_audio_bitrate',
+  samples => 'get_audio_samples',
+  title   => 'get_meta_title',
+  artist  => 'get_meta_artist',
+  album   => 'get_meta_album',
+  year    => 'get_meta_year',
+  comment => 'get_meta_comment',
+  track   => 'get_meta_track',
+  genre   => 'get_meta_genre',
+  load    => 'loadfile',
+);
+usage() if !$choice;
+
+my @chosen_station;
+if($choice eq 'load') {
+  for my $cname(keys(%channels)) {
+    for my $url(keys(%{$channels{$cname}})) {
+      push(@chosen_station, $channels{$load_choice}{$url});
+    }
+  }
+  dowhattold("load @chosen_station");
+}
+
+sub dowhattold {
+  my $action = shift;
+  my $fh;
+  open($fh, '>', $fifo) or die "Cant open $fh for writing: $!";
+  print $fh "$action\n";
+}
+
+sub usage {
+  print << "USAGE";
+  USAGE $0 command
+  COMMANDS
+
+USAGE
+  for my $action(sort(keys(%commands))) {
+    printf("%7s\n", $action);
+  }
+  exit 0;
+}
