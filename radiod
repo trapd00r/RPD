@@ -1,14 +1,16 @@
 #!/usr/bin/perl
 # radiod
 use strict;
-use Proc::Daemon;
+use App::Daemon; # Since Proc::Daemon isnt core, doesnt matter anymore
 
 my $APP = 'radiod';
-my $DEBUG = 1;
-my $cmd = 'mplayer -cache 300';
-#my $cmdOpts = '-slave -input file=$HOME/.mplayer/fifo';
+my $DEBUG = undef;
+my $cmd = 'mplayer -cache 200';
+# The FIFO is important, since that's what enables us to
+# remotely control mplayer
+my $cmdOpts = '-slave -input file=$HOME/.mplayer/fifo';
 
-#require "$ENV{HOME}/.config/radiod/channels";
+require "$ENV{HOME}/.config/radiod/channels";
 require "./channels" if $DEBUG;
 our %channels;
 
@@ -29,7 +31,7 @@ Daemonizing, bye...
 If you want me something, you can give me commands through
 the named pipe.
 NOTE
-Proc::Daemon::Init;
+daemonize();
 system("$cmd $cmdOpts @urlholder") == 0 or die;
 
 sub usage {
