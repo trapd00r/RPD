@@ -7,6 +7,9 @@ change volume etc
 
 Installation
 ============
+First, you'll need App::Daemon;
+    # cpan App::Daemon
+
 Copy the channel list to $XDG_CONFIG_HOME/radiod/channels 
 (usually $HOME/.config/radiod/channels) and place the daemon and client
 somewhere in your $PATH (/usr/bin, $HOME/bin or so). 
