@@ -5,6 +5,21 @@ radiod: Daemon using mplayer for playing radio streams
 radioc: Client for talking to the daemon; change stream, pause, 
 change volume etc
 
+Installation
+============
+Copy the channel list to $XDG_CONFIG_HOME/radiod/channels 
+(usually $HOME/.config/radiod/channels) and place the daemon and client
+somewhere in your $PATH (/usr/bin, $HOME/bin or so). 
+Make sure that you have a named pipe in $HOME/.mplayer/ named 'fifo'.
+You can create on with;
+    $ mkfifo $HOME/.mplayer/fifo
+Full command for lazy people;
+    git clone git@github.com:trapd00r/radiod.git \ 
+    && cd radiod \ 
+    && mkdir -p $XDG_CONFIG_HOME/radiod/ \
+    && cp channels $XDG_CONFIG_HOME/radiod \
+    && ./radiod
+Start the daemon and enjoy.
 License
 =======
 Copyright (C) 2010 Magnus Woldrich
