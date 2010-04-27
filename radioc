@@ -16,16 +16,16 @@ my %commands = (
   pause   => 'pause',
   son     => 'mute 0',
   soff    => 'mute 1',
-  codec   => 'get_audio_codec',
-  bitrate => 'get_audio_bitrate',
-  samples => 'get_audio_samples',
-  title   => 'get_meta_title',
-  artist  => 'get_meta_artist',
-  album   => 'get_meta_album',
-  year    => 'get_meta_year',
-  comment => 'get_meta_comment',
-  track   => 'get_meta_track',
-  genre   => 'get_meta_genre',
+#  codec   => 'get_audio_codec',
+#  bitrate => 'get_audio_bitrate',
+#  samples => 'get_audio_samples',
+#  title   => 'get_meta_title',
+#  artist  => 'get_meta_artist',
+#  album   => 'get_meta_album',
+#  year    => 'get_meta_year',
+#  comment => 'get_meta_comment',
+#  track   => 'get_meta_track',
+#  genre   => 'get_meta_genre',
   load    => 'loadfile',
 );
 usage() if !$choice;
@@ -49,12 +49,43 @@ sub dowhattold {
 
 sub usage {
   print << "USAGE";
-  USAGE $0 command
+Usage: $0 command (arg)
   COMMANDS
-
 USAGE
   for my $action(sort(keys(%commands))) {
-    printf("%7s\n", $action);
+    printf("%9s\n", $action);
   }
+  print << "LISTCHANGE";
+
+The current stream can easily be changed using the 'add' command and
+a corresponding key to the channel you want to listen to.
+
+  EXAMPLES
+    $0 add psy
+    $0 add p3
+    $0 add hc
+ 
+LISTCHANGE
+  printf("%10s   %10s\n", 'CHANNELS', 'KEY');
+  my %channellist;
+
+  for my $cname(keys(%channels)) {
+    for my $longname(keys(%{$channels{$cname}})) {
+      $channellist{$longname} = $cname;
+    }
+  }
+
+  foreach my $cname(sort{$a cmp $b} keys %channellist) {
+    printf("%17s | %s\n",
+      $cname, $channellist{$cname});
+  }
+  #for my $cname(keys(%channels)) {
+  #  for my $longname(keys(%{$channels{$cname}})) {
+  #    printf("%17s | %s\n", $longname, $cname);
+
+  #  }
+  #}
+
+  
   exit 0;
 }
