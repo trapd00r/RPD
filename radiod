@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # radiod
 use strict;
-use App::Daemon; # Since Proc::Daemon isnt core, doesnt matter anymore
+use App::Daemon qw(daemonize);
 
 my $APP = 'radiod';
 my $DEBUG = undef;
