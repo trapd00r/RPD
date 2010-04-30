@@ -5,6 +5,8 @@ radiod: Daemon using mplayer for playing radio streams
 radioc: Client for talking to the daemon; change stream, pause, 
 change volume etc
 
+  srnp: now playing information for sveriges radio
+
 Installation
 ============
 First, you'll need App::Daemon;
