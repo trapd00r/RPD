@@ -1,49 +1,33 @@
 #!/usr/bin/perl
 # radiod
+$APP     = 'radiod';
+$VERSION = 0.1;
 use strict;
+use Radiod::URI qw(geturi);
 use App::Daemon qw(daemonize);
 
-my $APP = 'radiod';
-my $DEBUG = undef;
 my $cmd = 'mplayer -cache 200';
-# The FIFO is important, since that's what enables us to
-# remotely control mplayer
 my $cmdOpts = '-slave -input file=$HOME/.mplayer/fifo';
 
-require "$ENV{HOME}/.config/radiod/channels";
-require "./channels" if $DEBUG;
-our %channels;
 
-usage();
+#usage();
+print "dg, psy, psy{1,2,3,4,5,6,7},dnb,hc,hs\n";
 print 'Station: ';
-my $choice = <STDIN>;
-chomp($choice);
+my $choice = <STDIN>; chomp($choice);
 
-my @urlholder; #cant use a scalar
-for my $cname(keys(%channels)) {
-  for my $url(keys(%{$channels{$cname}})) {
-      push(@urlholder, $channels{$choice}{$url});
-    }
-}
+my @loadStation = geturi($choice); #exports an array
+
 print << "NOTE";
 Daemonizing, bye...
 
 If you want me something, you can give me commands through
 the named pipe.
 NOTE
-daemonize();
-system("$cmd $cmdOpts @urlholder") == 0 or die;
 
-sub usage {
-  my %channellist;
-  for my $cname(keys(%channels)) {
-    for my $longname(keys(%{$channels{$cname}})) {
-      $channellist{$longname} = $cname;
-    }
-  }
-  foreach my $cname(sort{$a cmp $b} keys %channellist) {
-    printf("\033[36;1m%17s\033[0m | \033[31m%s\033[0m\n",
-      $cname, $channellist{$cname});
-  }
-}
+daemonize();
+system("$cmd $cmdOpts @loadStation") == 0 or die;
+
+#sub usage { TODO
+#  print all channames and longnames from Radiod::
+#}
 
