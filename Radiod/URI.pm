@@ -104,6 +104,31 @@ our %channels = (
     name => 'Schizoid - Psychill',
     uri  => 'http://schizoid.in:8000/chill.m3u',
   },
+  kohina     => {
+    name => 'Kohina - Chiptunes',
+    uri  => 'http://www.kohina.com/kohinasolanum.m3u',
+  },
+  keygen     => {
+    name => 'Keygen.fm',
+    uri  => 'http://stream.keygen-fm.ru:8000/listen.pls',
+  },
+  '8bit'     => {
+    name => '8bit FM',
+    uri  => 'http://www.8bitfm.com/8bit.pls',
+  },
+  sega       => {
+    name => 'Radio SEGA',
+    uri  => 'http://83.170.109.107:8000/listen.pls',
+  },
+  rainwave   => {
+    name => 'Rainwave - Videogame Music',
+    uri  => 'http://stream.gameowls.com:8000/rainwave.ogg',
+  },
+  oc         => {
+    name => 'OverClocked Radio',
+    uri  => ' http://ormgas.com:8000/ormgas.ogg',
+  },
+  
 );
 
 sub geturi {
