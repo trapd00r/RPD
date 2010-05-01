@@ -1,4 +1,8 @@
 # vim: set ft=perl nowrap textwidth=100:
+package Radiod::URI;
+require Exporter;
+@ISA = qw(Exporter);
+@EXPORT_OK = qw(geturi);
 our %channels = (
   'p1'  => {
     'P1'                =>  'http://sverigesradio.se/topsy/direkt/132-hi.mp3',
@@ -77,4 +81,15 @@ our %channels = (
   },
   
 );
+
+sub geturi {
+  my $chname = shift;
+  my @chosen = ();
+  for my $cname(keys %channels) {
+    for my $url(keys(%{$channels{$cname}})) {
+      push(@chosen, $channels{$chname}{$url});
+    }
+  }
+  return @chosen;
+}
 
