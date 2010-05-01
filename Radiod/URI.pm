@@ -1,95 +1,123 @@
-# vim: set ft=perl nowrap textwidth=100:
 package Radiod::URI;
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT_OK = qw(geturi);
+@EXPORT_OK = qw(geturi listchans);
+
 our %channels = (
-  'p1'  => {
-    'P1'                =>  'http://sverigesradio.se/topsy/direkt/132-hi.mp3',
+  p1        => {
+    name => 'Sveriges Radio P1',
+    uri  => 'http://sverigesradio.se/topsy/direkt/132-hi.mp3',
   },
-  'p2'  => {
-    'P2'                =>  'http://sverigesradio.se/topsy/direkt/163-hi.mp3',
+  p2        => {
+    name => 'Sveriges Radio P2',
+    uri  => 'http://sverigesradio.se/topsy/direkt/163-hi.mp3',
   },
-  'p3'  => {
-    'P3'                =>  'http://sverigesradio.se/topsy/direkt/164-hi.mp3',
+  p3        => {
+    name => 'Sveriges Radio P3',
+    uri  => 'http://sverigesradio.se/topsy/direkt/164-hi.mp3',
   },
-  'p4'  => {
-    'P4 Radiosporten'   =>  'http://sverigesradio.se/topsy/direkt/179-hi.mp3',
+  p4        => {
+    name => 'Sveriges Radio P4',
+    uri  => 'http://sverigesradio.se/topsy/direkt/179-hi.mp3',
   },
-  'p2m' => {
-    'P2 Musik'          =>  'http://sverigesradio.se/topsy/direkt/2562-hi.mp3',
+  p2musik   => {
+    name => 'Sveriges Radio P2 Musik',
+    uri  => 'http://sverigesradio.se/topsy/direkt/2562-hi.mp3',
   },
-  'dg'  => {
-    'P3 Din Gata'       =>  'http://sverigesradio.se/topsy/direkt/2576-hi.mp3',
+  dingata   => {
+    name => 'Din Gata 100.6',
+    uri  => 'http://sverigesradio.se/topsy/direkt/2576-hi.mp3',
   },
-  'star'  => {
-    'P3 Star'           => 'http://sverigesradio.se/topsy/direkt/1607-hi.mp3',
+  star      => { 
+    name => 'Sveriges Radio P3 Star',
+    uri  => 'http://sverigesradio.se/topsy/direkt/1607-hi.mp3',
   },
-  'street'  => {
-    'P3 Street'         => 'http://sverigesradio.se/topsy/direkt/1606-hi.mp3',
+  street    => {
+    name => 'Sveriges Radio P3 Street',
+    uri  => 'http://sverigesradio.se/topsy/direkt/1606-hi.mp3',
   },
-  'svea'  => {
-    'P3 Svea'           => 'http://sverigesradio.se/topsy/direkt/1605-hi.mp3',
+  svea      => {
+    name => 'Sveriges Radio P3 Svea',
+    uri  => 'http://sverigesradio.se/topsy/direkt/1605-hi.mp3',
   },
-  'm'  => {
-    'Metropol'          => 'http://sverigesradio.se/topsy/direkt/2842-hi.mp3',
+  metropol  => {
+    name => 'Sveriges Radio Metropol',
+    uri  => 'http://sverigesradio.se/topsy/direkt/1605-hi.mp3',
   },
-  'r' => {
-    'Rockster'          => 'http://sverigesradio.se/topsy/direkt/1604-hi.mp3',
+  rockster  => {
+    name => 'Sveriges Radio Rockster',
+    uri  => 'http://sverigesradio.se/topsy/direkt/1604-hi.mp3',
   },
-  'psy' => {
-    'DI Psy/Goa'        => 'http://listen.di.fm/public3/goapsy.pls',
+  psy       => {
+    name => 'Digitally Imported - Psychedelic',
+    uri  => 'http://listen.di.fm/public3/goapsy.pls',
   },
-  'dnb' => {
-    'DI Drum & Bass'    => 'http://www.di.fm/images/live/blue_96k.gif',
+  dnb       => {
+    name => 'Digitally Imported - Drum and Bass',
+    uri  => 'http://listen.di.fm/public3/drumandbass.pls',
   },
-  'hc'  => {
-    'DI Hardcore'       => 'http://listen.di.fm/public3/hardcore.pls',
+  hardcore  => {
+    name => 'Digitally Imported - Hardcore',
+    uri  => 'http://listen.di.fm/public3/hardcore.pls',
   },
-  'hs'  => {
-    'DI Hardstyle'      => 'http://listen.di.fm/public3/hardstyle.pls',
+  hardstyle => {
+    name => 'Digitally Imported - Hardstyle',
+    uri  => 'http://listen.di.fm/public3/hardstyle.pls',
   },
-  'gb'  => {
-    'DI Gabber'         => 'http://listen.di.fm/public3/gabber.pls',
+  gabber    => {
+    name => 'Digitally Imported - Gabber',
+    uri    => 'http://listen.di.fm/public3/gabber.pls',
   },
-  'psyc' => {
-    'DI Psychill'       => 'http://listen.di.fm/public3/psychill.pls',
+  psychill  => {
+    name => 'Digitally Imported - Psychill',
+    uri  => 'http://listen.di.fm/public3/psychill.pls',
   },
-  'dub'  => {
-    'DI Dubstep'        => 'http://listen.di.fm/public3/dubstep.pls',
+  dubstep   => {
+    name => 'Digitally Imported - Dubstep',
+    uri  => 'http://listen.di.fm/pulic3/dubstep.pls',
   },
-  'psy2' => {
-    'Schizoid Psy'      => 'http://schizoid.in/schizoid-psy.pls',
+  psy2       => {
+    name => 'Schizoid - Psychedelic',
+    uri  => 'http://schizoid.in/schizoid-psy.pls',
   },
-  'psy3' => {
-    'Psyradio Prog'     => 'http://streamer.psyradio.org:8010/listen.pls',
+  psy3       => {
+    name => 'Psyradio - Progressive',
+    uri  => 'http://streamer.psyradio.org:8010/listen.pls',
   },
-  'psy4' => {
-    'Psyradio Full-On'  => 'http://streamer.psyradio.org:8030/listen.pls',
+  psy4       => {
+    name => 'Psyradio Full-On',
+    uri  => 'http://streamer.psyradio.org:8030/listen.pls',
   },
-  'psy5' => {
-    'Chronomanova Psy'  => 'http://85.25.86.69:8000/listen.pls',
+  psy5       => {
+    name => 'Chromomanova - Psychedelic',
+    uri  => 'http://85.25.86.69:8000/listen.pls',
   },
-  'psy6' => {
-    'Philosomatika Psy' => 'http://yp.shoutcast.com/sbin/tunein-station.pls?id=5628',
+  psy6       => {
+    name => 'Philosomatika - Psychedelic',
+    uri  => 'http://yp.shoutcast.com/sbin/tunein-station.pls?id=5628',
   },
-  'psy7' => {
-    'NTR Psy'           => 'http://streaming.radionomy.com:8000/New-Trance-Radio.m3u&t=.pls',
+  psy7       => {
+    name => 'New Trance Radio - Psychedelic',
+    uri  => 'http://streaming.radionomy.com:8000/New-Trance-Radio.m3u',
   },
-  'psy8' => {
-    'Schizoid Psychill' => 'http://schizoid.in:8000/chill.m3u&t=.pls',
+  psy8       => {
+    name => 'Schizoid - Psychill',
+    uri  => 'http://schizoid.in:8000/chill.m3u',
   },
-  
 );
 
 sub geturi {
   my $chname = shift;
-  my @chosen = ();
-  for my $cname(keys %channels) {
-    for my $url(keys(%{$channels{$cname}})) {
-      push(@chosen, $channels{$chname}{$url});
-    }
-  }
-  return @chosen;
+  return $channels{$chname}->{uri};
 }
 
+sub listchans { #FIXME
+  my %hash;
+  for my $chname(sort(keys(%channels))) {
+    $hash{$channels{$chname}{name}} = $chname;
+  }
+    for my $key(sort(keys(%hash))) {
+      printf("%-40s %0s\n",
+        $key, $hash{$key});
+  }
+}
