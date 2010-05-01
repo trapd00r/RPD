@@ -1,15 +1,19 @@
 #!/usr/bin/perl
 # radioc - client for radiod
 use strict;
+use Radiod::URI qw(geturi);
 use Data::Dumper;
+$Data::Dumper::Sortkeys = 1;
+$Data::Dumper::Indent   = 1;
+$Data::Dumper::Maxdepth = 0; #unlimited
 
 my $choice = shift;
 my $load_choice = shift or 'dg'; # din gata
 chomp($choice);
 chomp($load_choice);
 my $fifo = "$ENV{HOME}/.mplayer/fifo";
-require "$ENV{HOME}/.config/radiod/channels";
 our %channels;
+
 my %commands = (
   quit    => 'quit',
   stop    => 'stop',
@@ -28,20 +32,18 @@ my %commands = (
 #  genre   => 'get_meta_genre',
   load    => 'loadfile',
 );
+#print Dumper \%commands;
 usage() if !$choice;
 
-my @chosen_station;
 if($choice eq 'load') {
-  for my $cname(keys(%channels)) {
-    for my $url(keys(%{$channels{$cname}})) {
-      push(@chosen_station, $channels{$load_choice}{$url});
-    }
-  }
-  dowhattold("load @chosen_station");
+  print 'Playing ',geturi($load_choice), "\n";
+  my @station = geturi($load_choice);
+  dowhattold("load @station");
 }
 
 sub dowhattold {
   my $action = shift;
+  chomp($action);
   my $fh;
   open($fh, '>', $fifo) or die "Cant open $fh for writing: $!";
   print $fh "$action\n";
