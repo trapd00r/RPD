@@ -30,13 +30,13 @@ my %commands = (
 #  comment => 'get_meta_comment',
 #  track   => 'get_meta_track',
 #  genre   => 'get_meta_genre',
-  load    => 'loadfile',
+  change  => 'loadfile',
 );
 #print Dumper \%commands;
 usage() if !$choice;
 
-if($choice eq 'load') {
-  print 'Playing ',geturi($load_choice), "\n";
+if($choice eq 'change') {
+  print 'Playing ',geturi($load_choice), "\n" unless !$load_choice;
   my @station = geturi($load_choice);
   dowhattold("load @station");
 }
@@ -63,9 +63,9 @@ The current stream can easily be changed using the 'add' command and
 a corresponding key to the channel you want to listen to.
 
   EXAMPLES
-    $0 add psy
-    $0 add p3
-    $0 add hc
+    $0 change psy
+    $0 change p3
+    $0 change hc
  
 LISTCHANGE
   printf("%10s   %10s\n", 'CHANNELS', 'KEY');
