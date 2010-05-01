@@ -59,7 +59,7 @@ USAGE
   }
   print << "LISTCHANGE";
 
-The current stream can easily be changed using the 'add' command and
+The current stream can easily be changed using the 'change' command and
 a corresponding key to the channel you want to listen to.
 
   EXAMPLES
