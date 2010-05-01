@@ -9,22 +9,13 @@ change volume etc
 
 Installation
 ============
-First, you'll need App::Daemon;
-    # cpan App::Daemon
+First, you'll need some modules;
+    # cpan App::Daemon LWP::Simple XML::Simple
 
-Copy the channel list to $XDG_CONFIG_HOME/radiod/channels 
-(usually $HOME/.config/radiod/channels) and place the daemon and client
-somewhere in your $PATH (/usr/bin, $HOME/bin or so). 
-Make sure that you have a named pipe in $HOME/.mplayer/ named 'fifo'.
-You can create one with;
+Then, you need a named pipe in $HOME/.mplayer/fifo;
     $ mkfifo $HOME/.mplayer/fifo
-Full command for lazy people;
-    git clone git@github.com:trapd00r/radiod.git \ 
-    && cd radiod \ 
-    && mkdir -p $XDG_CONFIG_HOME/radiod/ \
-    && cp channels $XDG_CONFIG_HOME/radiod \
-    && ./radiod
-Start the daemon and enjoy.
+
+Start radiod and enjoy.
 License
 =======
 Copyright (C) 2010 Magnus Woldrich
