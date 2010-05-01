@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # radioc - client for radiod
 use strict;
-use Radiod::URI qw(geturi);
+use Radiod::URI qw(geturi listchans);
 use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Indent   = 1;
@@ -37,8 +37,8 @@ usage() if !$choice;
 
 if($choice eq 'change') {
   print 'Playing ',geturi($load_choice), "\n" unless !$load_choice;
-  my @station = geturi($load_choice);
-  dowhattold("load @station");
+  my $station = geturi($load_choice);
+  dowhattold("load $station");
 }
 
 sub dowhattold {
@@ -68,26 +68,8 @@ a corresponding key to the channel you want to listen to.
     $0 change hc
  
 LISTCHANGE
-  printf("%10s   %10s\n", 'CHANNELS', 'KEY');
-  my %channellist;
-
-  for my $cname(keys(%channels)) {
-    for my $longname(keys(%{$channels{$cname}})) {
-      $channellist{$longname} = $cname;
-    }
-  }
-
-  foreach my $cname(sort{$a cmp $b} keys %channellist) {
-    printf("%17s | %s\n",
-      $cname, $channellist{$cname});
-  }
-  #for my $cname(keys(%channels)) {
-  #  for my $longname(keys(%{$channels{$cname}})) {
-  #    printf("%17s | %s\n", $longname, $cname);
-
-  #  }
-  #}
-
+  printf("%15s %28s\n", 'CHANNEL', 'KEY');
+  listchans();
   
   exit 0;
 }
