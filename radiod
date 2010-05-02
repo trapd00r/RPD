@@ -1,14 +1,23 @@
 #!/usr/bin/perl
 # radiod
+use Radiod::URI qw(listchans);
 $APP     = 'radiod';
 $VERSION = 0.1;
-
 use strict;
-use Radiod::URI qw(listchans geturi);
+use Radiod::URI qw(geturi);
 use App::Daemon qw(daemonize);
 
 my $cmd = 'mplayer -cache 200';
 my $cmdOpts = '-slave -input file=$HOME/.mplayer/fifo';
+
+if(-p "$ENV{HOME}/.mplayer/fifo") {
+  print "FIFO found - all good.\n\n";
+}
+else {
+  require POSIX;
+  POSIX::mkfifo("$ENV{HOME}/.mplayer/fifo", 0666)
+    or die "Can not make fifo: $ENV{HOME}/.mplayer/fifo: $!";
+}
 
 listchans();
 print "\nStation: ";
