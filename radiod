@@ -1,10 +1,10 @@
 #!/usr/bin/perl
 # radiod
-use Radiod::URI qw(listchans);
 $APP     = 'radiod';
 $VERSION = 0.1;
+
 use strict;
-use Radiod::URI qw(geturi);
+use Radiod::URI qw(listchans geturi);
 use App::Daemon qw(daemonize);
 
 my $cmd = 'mplayer -cache 200';
