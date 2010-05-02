@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# srnp - np for sveriges radio
 use strict;
 use LWP::Simple;
 use XML::Simple;
@@ -8,7 +9,7 @@ use Data::Dumper;
 my $xml = XMLin(get("http://api.sr.se/api/channels/channels.aspx"));
 $xml = $xml->{channel};
 my $npurl = "http://api.sr.se/api/rightnowinfo/Rightnowinfo.aspx?unit=";
-my $chanlist = './channelids.csv';
+my $chanlist = '/home/scp1/devel/radiod/channelids.csv';
 
 our $optChan = 2576;
 
@@ -21,11 +22,9 @@ while(my $chinfo = <$fh>) {
   $channels{$name} = $id;
 }
 
-
-
 sub getID {
   shift;
-  my $name = shift or die;# || np($optChan),npNext($optChan);exit 0;
+  my $name = shift;# np($optChan),npNext($optChan);exit 0;
   $optChan = $channels{$name};
   np($optChan);npNext($optChan);
 }
@@ -34,7 +33,6 @@ GetOptions(
   'help'    => \&usage,
   'chan:s'  => \&getID,
   'list'    => sub {print "$_\n" for (sort keys %channels);},
-#  'all'     => \&npAll,
 );
 
 sub np {
@@ -69,26 +67,11 @@ sub npNext {
   }
 }
 
-#foreach my $chname(sort(keys(%{$xml}))) {
-#  my $id = $xml->{$chname}->{id}; 
-#  my $xml2 = XMLin(get("$npurl$id"));
-#  my $title = $xml2->{Channel}->{SongTitle};
-#  my $artist = $xml2->{Channel}->{Artist};
-#  my $nowplaying = sprintf(
-#    "\033[38;5;102m%s\033[0m by \033[38;5;105m%s\033[0m", $title, $artist);
-#  if(ref($artist or $title)) {
-#    $nowplaying = "";
-#  }
-#
-#  printf("%5d \033[38;5;100m%20s\033[0m %s\n",
-#    $id, $chname, $nowplaying);
-#}
-
-
 sub usage {
   print << "USAGE";
   srnp [OPTIONS]
   OPTIONS
+    -np     show now playing info for default chan
     -chan   channel to operate on
     -list   list available channels
 
