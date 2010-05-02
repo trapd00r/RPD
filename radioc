@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # radioc - client for radiod
 use strict;
-use Radiod::URI qw(geturi listchans);
+use Radiod::URI qw(geturi listchans getchname);
 use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Indent   = 1;
@@ -37,14 +37,16 @@ usage() if !$choice;
 
 
 if($choice ~~ %commands) {
-  my $station;
   if($choice eq 'change') {
     if(!$load_choice) {
       print STDERR "Provide a channel!\n";
       exit 1;
     }
-    print 'Playing ', geturi($load_choice), "\n" unless !$load_choice;
-    $station = geturi($load_choice);
+    
+    my $station = geturi($load_choice);
+    my $name = getchname($load_choice);
+    printf("Playing: %s\n         (%s)\n",
+      $name, $station);
     dowhattold("load $station");
     exit 0;
   }
@@ -81,6 +83,5 @@ a corresponding key to the channel you want to listen to.
 LISTCHANGE
   printf("%15s %28s\n", 'CHANNEL', 'KEY');
   listchans();
-  
   exit 0;
 }
