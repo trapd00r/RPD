@@ -12,9 +12,6 @@ Installation
 First, you'll need some modules;
     # cpan App::Daemon LWP::Simple XML::Simple
 
-Then, you need a named pipe in $HOME/.mplayer/fifo;
-    $ mkfifo $HOME/.mplayer/fifo
-
 Then, just run;
     $ perl Makefile.PL
     $ make
