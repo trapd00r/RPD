@@ -133,6 +133,7 @@ our %channels = (
 
 sub geturi {
   my $chname = shift;
+  return undef unless exists $channels{$chname};
   return $channels{$chname}->{uri};
 }
 

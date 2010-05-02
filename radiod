@@ -23,7 +23,8 @@ listchans();
 print "\nStation: ";
 my $choice = <STDIN>; chomp($choice);
 
-my @loadStation = geturi($choice); #exports an array
+my $loadStation = geturi($choice);
+die("No such channel") unless $loadStation;
 
 print << "NOTE";
 Daemonizing, bye...
@@ -33,6 +34,6 @@ the named pipe.
 NOTE
 
 daemonize();
-system("$cmd $cmdOpts @loadStation") == 0 or die;
+system("$cmd $cmdOpts $loadStation") == 0 or die;
 
 
