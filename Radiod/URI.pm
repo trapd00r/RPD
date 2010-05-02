@@ -1,7 +1,7 @@
 package Radiod::URI;
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT_OK = qw(geturi listchans);
+@EXPORT_OK = qw(geturi listchans getchname);
 
 our %channels = (
   p1        => {
@@ -134,6 +134,11 @@ our %channels = (
 sub geturi {
   my $chname = shift;
   return $channels{$chname}->{uri};
+}
+
+sub getchname {
+  my $chname = shift;
+  return $channels{$chname}->{name};
 }
 
 sub listchans { #FIXME
