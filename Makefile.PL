@@ -4,10 +4,11 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME => 'radiod',
     DISTNAME => 'radiod',
-    PM => {
-      'Radiod/URI.pm'  => '/usr/lib/perl5/site_perl/Radiod/URI.pm',
-    },
+#    PM => {
+#      'Radiod/URI.pm'  => '/usr/lib/perl5/site_perl/Radiod/URI.pm',
+#    },
 #    VERSION_FROM => 'Radiod/URI.pm',
+    PMLIBDIRS => ['lib'],
     ABSTRACT => 'Daemon and client for playing radio streams',
     AUTHOR => 'Magnus Woldrich <trapd00r@trapd00r.se',
     EXE_FILES => ['radiod','radioc','srnp'],
