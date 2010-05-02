@@ -15,6 +15,11 @@ First, you'll need some modules;
 Then, you need a named pipe in $HOME/.mplayer/fifo;
     $ mkfifo $HOME/.mplayer/fifo
 
+Then, just run;
+    $ perl Makefile.PL
+    $ make
+    # make install
+
 Start radiod and enjoy.
 License
 =======
