@@ -16,11 +16,11 @@ our %channels;
 
 my %commands = (
   quit    => 'quit',
-  stop    => 'stop',
+#  stop    => 'stop',
   pause   => 'pause',
   son     => 'mute 0',
   soff    => 'mute 1',
-#  codec   => 'get_audio_codec',
+#  codec   => 'get_audio_codec', FIXME - we want answers, too 
 #  bitrate => 'get_audio_bitrate',
 #  samples => 'get_audio_samples',
 #  title   => 'get_meta_title',
