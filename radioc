@@ -18,12 +18,16 @@ $options = {
   pause   => sub {fifo_w($action);},
   son     => sub {fifo_w($action);},
   soff    => sub {fifo_w($action);},
-  change  => sub {fifo_w('loadfile ',geturi($arg));},  
+  change  => sub {
+    fifo_w('loadfile ',geturi($arg));
+    print "Playing ". getchname($arg), "\n   From ", geturi($arg),"\n";
+  },
   np      => sub {print np(), "\n";},
   help    => sub {printf("%-15s\n",$_) for sort(keys %{$options});},
   list    => sub {listchans();},
   'help++'=> sub {usage();},
 };
+
 
 $options->{'help++'}->() unless $action;
 defined $options->{$action} && $options->{$action}->();
