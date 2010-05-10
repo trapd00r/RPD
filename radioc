@@ -1,87 +1,78 @@
 #!/usr/bin/perl
-# radioc - client for radiod
+# -- radioc -- 
+# client for radiod
 use strict;
 use Radiod::URI qw(geturi listchans getchname);
 use Data::Dumper;
-$Data::Dumper::Sortkeys = 1;
-$Data::Dumper::Indent   = 1;
-$Data::Dumper::Maxdepth = 0; #unlimited
 
-my $choice = shift;
-my $load_choice = shift or 'dingata';
-chomp($choice);
-chomp($load_choice);
-my $fifo = "$ENV{HOME}/.mplayer/fifo";
-our %channels;
-
-my %commands = (
-  quit    => 'quit',
-#  stop    => 'stop',
-  pause   => 'pause',
-  son     => 'mute 0',
-  soff    => 'mute 1',
-#  codec   => 'get_audio_codec', FIXME - we want answers, too 
-#  bitrate => 'get_audio_bitrate',
-#  samples => 'get_audio_samples',
-#  title   => 'get_meta_title',
-#  artist  => 'get_meta_artist',
-#  album   => 'get_meta_album',
-#  year    => 'get_meta_year',
-#  comment => 'get_meta_comment',
-#  track   => 'get_meta_track',
-#  genre   => 'get_meta_genre',
-  change  => 'loadfile',
-);
-#print Dumper \%commands;
-usage() if !$choice;
+my $options; 
+my $action = shift;
+my $arg    = shift;
+my $pipe_w = "$ENV{HOME}/.mplayer/radiod.fifo";
+my $log    = "$ENV{HOME}/.mplayer/radiod.log";
 
 
-if($choice ~~ %commands) {
-  if($choice eq 'change') {
-    if(!$load_choice) {
-      print STDERR "Provide a channel!\n";
-      exit 1;
-    }
-    
-    my $station = geturi($load_choice);
-    my $name = getchname($load_choice);
-    printf("Playing: %s\n         (%s)\n",
-      $name, $station);
-    dowhattold("load $station");
-    exit 0;
-  }
-  print "Choice found!\n";
-  dowhattold($choice);
+$options = {
+  quit    => sub {fifo_w($action);},
+  stop    => sub {fifo_w('pause');}, # stop kills the player
+  pause   => sub {fifo_w($action);},
+  son     => sub {fifo_w($action);},
+  soff    => sub {fifo_w($action);},
+  change  => sub {fifo_w('loadfile ',geturi($arg));},  
+  np      => sub {print np(), "\n";},
+  help    => sub {printf("%-15s\n",$_) for sort(keys %{$options});},
+  list    => sub {listchans();},
+  'help++'=> sub {usage();},
+};
+
+$options->{'help++'}->() unless $action;
+defined $options->{$action} && $options->{$action}->();
+
+sub fifo_w {
+  my $action = shift;
+  my $arg    = shift;
+  my $fh;
+  open(my $fh, '>', $pipe_w) or die "Can not open $pipe_w for writing: $!";
+  print {$fh} "$action $arg\n";
 }
 
-sub dowhattold {
-  my $action = shift;
-  chomp($action);
-  my $fh;
-  open($fh, '>', $fifo) or die "Cant open $fh for writing: $!";
-  print $fh "$action\n";
+sub np {
+  open(my $fh, '<', $log) or die "Can not open $log for reading:  $!";
+  my @content = <$fh>;
+  close($fh);
+  
+  my @npinfo = grep(/ICY/g, @content);
+  my @chinfo = grep(/^Website/g, @content);
+  my $np     = $npinfo[@npinfo-1];
+  $np =~ s/ICY Info: StreamTitle='//;
+  $np =~ s/.;//;
+  $np =~ s/Stream.+//;
+
+  my $channel = $chinfo[@chinfo-1];
+  $channel =~ s/Website: //;
+  chomp($np, $channel);
+  my $npinfo = sprintf("np: %s (%s)", $np, $channel);
+  return $npinfo;
 }
 
 sub usage {
   print << "USAGE";
-Usage: $0 command (arg)
-  COMMANDS
+  Usage: $0 command (arg)
+    COMMANDS
 USAGE
-  for my $action(sort(keys(%commands))) {
-    printf("%9s\n", $action);
-  }
+
+  $options->{help}->();
+
   print << "LISTCHANGE";
 
-The current stream can easily be changed using the 'change' command and
-a corresponding key to the channel you want to listen to.
+  Change channel using the 'change' command.
+  Each channel responds to a key.
 
   EXAMPLES
     $0 change psy
+    $0 change hardcore
     $0 change p3
-    $0 change hc
- 
+
+    Try $0 list to see available channels
 LISTCHANGE
-  printf("%15s %28s\n", 'CHANNEL', 'KEY');
-  listchans();
-  exit 0;
 }
