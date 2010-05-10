@@ -20,7 +20,9 @@ $options = {
   soff    => sub {fifo_w($action);},
   change  => sub {
     fifo_w('loadfile ',geturi($arg));
-    print "Playing ". getchname($arg), "\n   From ", geturi($arg),"\n";
+    print "Playing: ". getchname($arg), "\n   From: ", geturi($arg),"\n";
+    sleep 2; # give mplayer time to load
+    print "     ";$options->{np}->();
   },
   np      => sub {print np(), "\n";},
   help    => sub {printf("%-15s\n",$_) for sort(keys %{$options});},
