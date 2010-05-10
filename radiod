@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 # radiod
+# TODO => -playlist, parse log OR > fifo_out
 use Radiod::URI qw(listchans);
 $APP     = 'radiod';
 $VERSION = 0.1;
@@ -7,15 +8,16 @@ use strict;
 use Radiod::URI qw(geturi);
 use App::Daemon qw(daemonize);
 
-my $cmd = 'mplayer -cache 200';
-my $cmdOpts = '-slave -input file=$HOME/.mplayer/fifo';
+my $cmd = 'mplayer -cache 200 -quiet -identify';
+my $cmdOpts = '-slave -input file=$HOME/.mplayer/radiod.fifo';
+my $log = '$HOME/.mplayer/radiod.log';
 
-if(-p "$ENV{HOME}/.mplayer/fifo") {
+if(-p "$ENV{HOME}/.mplayer/radiod.fifo") {
   print "FIFO found - all good.\n\n";
 }
 else {
   require POSIX;
-  POSIX::mkfifo("$ENV{HOME}/.mplayer/fifo", 0666)
+  POSIX::mkfifo("$ENV{HOME}/.mplayer/radiod.fifo", 0666)
     or die "Can not make fifo: $ENV{HOME}/.mplayer/fifo: $!";
 }
 
@@ -34,6 +36,4 @@ the named pipe.
 NOTE
 
 daemonize();
-system("$cmd $cmdOpts $loadStation") == 0 or die;
-
-
+system("$cmd $cmdOpts $loadStation > $log") == 0 or die;
