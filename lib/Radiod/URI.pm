@@ -128,7 +128,42 @@ our %channels = (
     name => 'OverClocked Radio',
     uri  => ' http://ormgas.com:8000/ormgas.ogg',
   },
-  
+  gabber2    => {
+    name => 'Hardcast Gabber',
+    uri  =>'http://www.shoutcast.com/sbin/tunein-station.pls?id=1390',
+  },
+  gabber3    => {
+    name => 'Rotterdam Terror (192kbps)',
+    uri  => 'http://www.shoutcast.com/sbin/tunein-station.pls?id=784307',
+  },
+  moh  => {
+    name => 'Masters of Hardcore',
+    uri  => 'http://www.hardcoreradio.nl/hr.m3u',
+  },
+  hardstyle2 => {
+    name => 'Hard.fm Hardstyle (192kbps)',
+    uri  => 'http://files.hard.fm/192.pls',
+  },
+  hardstyle3 => {
+    name => 'Blackout Hardstyle (320kbps)',
+    uri  =>'http://yourno1hitradio.eu:8000/listen.pls',
+  },
+  rap       => {
+    name => 'The BOX Hip-Hop',
+    uri  => 'http://www.shoutcast.com/sbin/tunein-station.pls?id=5465&t=.pls',
+  },
+  '90'      => {
+    name => "Hits from the 90's",
+    uri  => 'http://www.shoutcast.com/sbin/tunein-station.pls?id=4384&t=.pls',
+  },
+  dnb2    => {
+    name => 'Drum and Bass Radio',
+    uri  => 'http://www.dnbradio.com/hi.m3u',
+  },
+  cvgm    => {
+    name => 'cvgm.net - Video Game and Demo Music',
+    uri  => 'http://de.cvgm.net/cvgm128.mp3',
+  },
 );
 
 sub geturi {
