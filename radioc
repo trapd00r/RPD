@@ -3,6 +3,7 @@
 # client for radiod
 use strict;
 use Radiod::URI qw(geturi listchans getchname);
+use Mplayer::Stream::NowPlaying qw(nowplaying);
 use Data::Dumper;
 
 my $options; 
@@ -24,10 +25,16 @@ $options = {
     sleep 2; # give mplayer time to load
     print "     ";$options->{np}->();
   },
-  np      => sub {print np(), "\n";},
+  np      => sub {print nowplaying($log, 'current'), "\n";},
   help    => sub {printf("%-15s\n",$_) for sort(keys %{$options});},
   list    => sub {listchans();},
   'help++'=> sub {usage();},
+  npa     => sub {
+    my $info = nowplaying($log, 'all');
+    for my $np (sort(keys(%{$info}))) {
+      printf("%s (%s)\n", $np, $info->{$np});
+    }
+  }
 };
 
 
@@ -37,48 +44,38 @@ defined $options->{$action} && $options->{$action}->();
 sub fifo_w {
   my $action = shift;
   my $arg    = shift;
-  my $fh;
   open(my $fh, '>', $pipe_w) or die "Can not open $pipe_w for writing: $!";
   print {$fh} "$action $arg\n";
 }
 
-sub np {
-  open(my $fh, '<', $log) or die "Can not open $log for reading:  $!";
-  my @content = <$fh>;
-  close($fh);
-  
-  my @npinfo = grep(/ICY/g, @content);
-  my @chinfo = grep(/^Website/g, @content);
-  my $np     = $npinfo[@npinfo-1];
-  $np =~ s/ICY Info: StreamTitle='//;
-  $np =~ s/.;//;
-  $np =~ s/Stream.+//;
 
-  my $channel = $chinfo[@chinfo-1];
-  $channel =~ s/Website: //;
-  chomp($np, $channel);
-  my $npinfo = sprintf("np: %s (%s)", $np, $channel);
-  return $npinfo;
-}
+
+
+
+
+
+
+
+
 
 sub usage {
   print << "USAGE";
-  Usage: $0 command (arg)
-    COMMANDS
+  Usage: radioc [OPTIONS] (ARGS) 
+
+  OPTIONS:
+      np      show the currently playing song
+      npa     show all played songs since radiod started
+      change  change channel
+      list    list all available channels
+      son     turn on sound
+      soff    turn off sound
+      pause   pause playback
+      stop    pauses playback. If you really want to stop, use quit
+      quit    stops playback (and radiod)
+
+  EXAMPLES:
+      radioc change psy   # change channel to the one associated with
+                            the 'psy' key (di.fm)
+
 USAGE
-
-  $options->{help}->();
-
-  print << "LISTCHANGE";
-
-  Change channel using the 'change' command.
-  Each channel responds to a key.
-
-  EXAMPLES
-    $0 change psy
-    $0 change hardcore
-    $0 change p3
-
-    Try $0 list to see available channels
-LISTCHANGE
 }
