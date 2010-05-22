@@ -1,12 +1,13 @@
 #!/usr/bin/perl
 # radiod
 # TODO => -playlist, parse log OR > fifo_out
-use Radiod::URI qw(listchans);
 $APP     = 'radiod';
 $VERSION = 0.1;
+
 use strict;
-use Radiod::URI qw(geturi);
-use App::Daemon qw(daemonize);
+use Radiod::URI qw(geturi listchans);
+#use App::Daemon qw(daemonize);
+use Working::Daemon;
 
 my $cmd = 'mplayer -cache 200 -quiet -identify';
 my $cmdOpts = '-slave -input file=$HOME/.mplayer/radiod.fifo';
@@ -18,7 +19,7 @@ if(-p "$ENV{HOME}/.mplayer/radiod.fifo") {
 else {
   require POSIX;
   POSIX::mkfifo("$ENV{HOME}/.mplayer/radiod.fifo", 0666)
-    or die "Can not make fifo: $ENV{HOME}/.mplayer/fifo: $!";
+    or die "Can not make fifo: $ENV{HOME}/.mplayer/radiod.fifo: $!";
 }
 
 listchans();
@@ -28,12 +29,13 @@ my $choice = <STDIN>; chomp($choice);
 my $loadStation = geturi($choice);
 die("No such channel") unless $loadStation;
 
-print << "NOTE";
-Daemonizing, bye...
-
-If you want me something, you can give me commands through
-the named pipe.
-NOTE
 
 daemonize();
-system("$cmd $cmdOpts $loadStation > $log") == 0 or die;
+system("$cmd $cmdOpts $loadStation &> $log") == 0 or die;
+
+
+sub daemonize {
+  my $daemon = Working::Daemon->new;
+  $daemon->name('radiod');
+  $daemon->do_action;
+}
