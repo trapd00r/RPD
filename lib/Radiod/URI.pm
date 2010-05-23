@@ -96,14 +96,6 @@ our %channels = (
     name => 'Philosomatika - Psychedelic',
     uri  => 'http://yp.shoutcast.com/sbin/tunein-station.pls?id=5628',
   },
-  psy7       => {
-    name => 'New Trance Radio - Psychedelic',
-    uri  => 'http://streaming.radionomy.com:8000/New-Trance-Radio.m3u',
-  },
-  psy8       => {
-    name => 'Schizoid - Psychill',
-    uri  => 'http://schizoid.in:8000/chill.m3u',
-  },
   kohina     => {
     name => 'Kohina - Chiptunes',
     uri  => 'http://www.kohina.com/kohinasolanum.m3u',
@@ -112,10 +104,6 @@ our %channels = (
     name => 'Keygen.fm',
     uri  => 'http://stream.keygen-fm.ru:8000/listen.pls',
   },
-  '8bit'     => {
-    name => '8bit FM',
-    uri  => 'http://www.8bitfm.com/8bit.pls',
-  },
   sega       => {
     name => 'Radio SEGA',
     uri  => 'http://83.170.109.107:8000/listen.pls',
@@ -123,10 +111,6 @@ our %channels = (
   rainwave   => {
     name => 'Rainwave - Videogame Music',
     uri  => 'http://stream.gameowls.com:8000/rainwave.ogg',
-  },
-  oc         => {
-    name => 'OverClocked Radio',
-    uri  => ' http://ormgas.com:8000/ormgas.ogg',
   },
   gabber2    => {
     name => 'Hardcast Gabber',
@@ -147,10 +131,6 @@ our %channels = (
   hardstyle3 => {
     name => 'Blackout Hardstyle (320kbps)',
     uri  =>'http://yourno1hitradio.eu:8000/listen.pls',
-  },
-  rap       => {
-    name => 'The BOX Hip-Hop',
-    uri  => 'http://www.shoutcast.com/sbin/tunein-station.pls?id=5465&t=.pls',
   },
   '90'      => {
     name => "Hits from the 90's",
