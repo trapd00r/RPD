@@ -9,7 +9,7 @@ use Radiod::URI qw(geturi listchans);
 #use App::Daemon qw(daemonize);
 use Working::Daemon;
 
-my $append = 1; # set to undef to have a new log created for every start
+#my $append = 1; # set to undef to have a new log created for every start
 my $cmd = 'mplayer -cache 200 -quiet -identify';
 my $cmdOpts = '-slave -input file=$HOME/.mplayer/radiod.fifo';
 my $log = '$HOME/.mplayer/radiod.log';
@@ -33,13 +33,12 @@ die("No such channel") unless $loadStation;
 
 daemonize();
 
-if($append) {
+if($append > 0) {
   system("$cmd $cmdOpts $loadStation &>> $log") == 0 or die;
 }
 else {
   system("$cmd $cmdOpts $loadStation &> $log") == 0 or die; 
 }
-
 
 sub daemonize {
   my $daemon = Working::Daemon->new;
