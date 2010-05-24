@@ -30,9 +30,10 @@ $options = {
   list    => sub {listchans();},
   'help++'=> sub {usage();},
   npa     => sub {
-    my $info = nowplaying($log, 'all');
-    for my $np (sort(keys(%{$info}))) {
-      printf("%s (%s)\n", $np, $info->{$np});
+    my $info = nowplaying($log,'all');
+    for my  $songinfo(keys(%{$info})) { #FIXME channel names
+      printf("%50.50s\n", 
+        $songinfo,''); #%{$info}->{$songinfo});
     }
   }
 };
@@ -47,10 +48,6 @@ sub fifo_w {
   open(my $fh, '>', $pipe_w) or die "Can not open $pipe_w for writing: $!";
   print {$fh} "$action $arg\n";
 }
-
-
-
-
 
 
 
