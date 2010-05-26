@@ -12,6 +12,10 @@ my $arg    = shift;
 my $pipe_w = "$ENV{HOME}/.mplayer/radiod.fifo";
 my $log    = "$ENV{HOME}/.mplayer/radiod.log";
 
+if(!-e $log) {
+  open(my $fh,'>',$log) or die "Cant create $log: $!";
+}
+
 
 $options = {
   quit    => sub {fifo_w($action);},
@@ -32,8 +36,8 @@ $options = {
   npa     => sub {
     my $info = nowplaying($log,'all');
     for my  $songinfo(keys(%{$info})) { #FIXME channel names
-      printf("%50.50s\n", 
-        $songinfo,''); #%{$info}->{$songinfo});
+      printf("%50.50s %s\n", 
+        $songinfo,%{$info}->{$songinfo});
     }
   }
 };
