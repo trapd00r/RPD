@@ -1,34 +1,40 @@
 #!/usr/bin/perl
-# radiod
-# TODO => -playlist, parse log OR > fifo_out
-$APP     = 'radiod';
+
+$APP     = 'RPD';
 $VERSION = 0.1;
+
+=rpd
+  Radio Playing Daemon
+
+  A daemon for playing radio streams
+
+=cut
+
 
 use strict;
 use Radiod::URI qw(geturi listchans);
-#use App::Daemon qw(daemonize);
 use Working::Daemon;
 
-my $append = 1; # set to undef to have a new log created for every start
-my $cmd = 'mplayer -cache 200 -identify -idle';
-my $cmdOpts = '-slave -input file=$HOME/.mplayer/radiod.fifo';
-my $log = '$HOME/.mplayer/radiod.log';
+my $fifo    = "$ENV{HOME}/.mplayer/rpd.fifo";
+my $append  = 1; # if non-zero, RPD will append to an existing log
+my $cmd     = 'mplayer -cache 400 -identify -idle ';
+my $cmdOpts = "-slave -input file=$fifo";
+my $log     = "$ENV{HOME}/.mplayer/rpd.log";
 
-if(-p "$ENV{HOME}/.mplayer/radiod.fifo") {
+if(-p $fifo) {
   print "FIFO found - all good.\n\n";
 }
 else {
   require POSIX;
-  POSIX::mkfifo("$ENV{HOME}/.mplayer/radiod.fifo", 0666)
-    or die "Can not make fifo: $ENV{HOME}/.mplayer/radiod.fifo: $!";
+  POSIX::mkfifo($fifo, 0666)
+    or die "Can not make fifo: $fifo $!";
 }
 
 listchans();
 print "\nStation: ";
-my $choice = <STDIN>; chomp($choice);
+chomp(my $choice = <STDIN>);
 
-my $loadStation = geturi($choice);
-die("No such channel") unless $loadStation;
+my $loadStation = geturi($choice) // geturi('dingata'); # default
 
 
 daemonize();
