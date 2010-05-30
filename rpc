@@ -1,16 +1,21 @@
 #!/usr/bin/perl
-# -- radioc -- 
-# client for radiod
+=rpc
+  Radio Playing Client
+
+  Program for controlling Radio Playing Daemon (RPD)
+
+=cut
+
 use strict;
-use Radiod::URI qw(geturi listchans getchname);
+use RPD::URI qw(geturi listchans getchname);
 use Mplayer::Stream::NowPlaying qw(nowplaying);
 use Data::Dumper;
 
 my $options; 
 my $action = shift;
 my $arg    = shift;
-my $pipe_w = "$ENV{HOME}/.mplayer/radiod.fifo";
-my $log    = "$ENV{HOME}/.mplayer/radiod.log";
+my $pipe_w = "$ENV{HOME}/.mplayer/rpd.fifo";
+my $log    = "$ENV{HOME}/.mplayer/rpd.log";
 
 if(!-e $log) {
   open(my $fh,'>',$log) or die "Cant create $log: $!";
@@ -23,23 +28,22 @@ $options = {
   pause   => sub {fifo_w($action);},
   son     => sub {fifo_w($action);},
   soff    => sub {fifo_w($action);},
-  change  => sub {
-    fifo_w('loadfile ',geturi($arg));
-    print "Playing: ". getchname($arg), "\n   From: ", geturi($arg),"\n";
-    sleep 2; # give mplayer time to load
-    print "     ";$options->{np}->();
-  },
   np      => sub {print nowplaying($log, 'current'), "\n";},
   help    => sub {printf("%-15s\n",$_) for sort(keys %{$options});},
   list    => sub {listchans();},
   'help++'=> sub {usage();},
   npa     => sub {
     my $info = nowplaying($log,'all');
-    for my  $songinfo(keys(%{$info})) { #FIXME channel names
-      printf("%50.50s %s\n", 
-        $songinfo,%{$info}->{$songinfo});
+    for my $oldnp(@{$info}) {
+      print "$oldnp\n";
     }
-  }
+  },
+  change  => sub {
+    fifo_w('loadfile', geturi($arg));
+    print "Playing ", getchname($arg), "\n   From: ", geturi($arg), "\n";
+    sleep 2;
+    print "       "; $options->{np}->();
+  },
 };
 
 
@@ -57,25 +61,23 @@ sub fifo_w {
 
 
 
-
-
 sub usage {
   print << "USAGE";
-  Usage: radioc [OPTIONS] (ARGS) 
+  Usage: rpc [OPTIONS] (ARGS) 
 
   OPTIONS:
       np      show the currently playing song
-      npa     show all played songs since radiod started
+      npa     show all played songs since RPD started
       change  change channel
       list    list all available channels
       son     turn on sound
       soff    turn off sound
       pause   pause playback
       stop    pauses playback. If you really want to stop, use quit
-      quit    stops playback (and radiod)
+      quit    stops playback (and RPD)
 
   EXAMPLES:
-      radioc change psy   # change channel to the one associated with
+      rpc change psy   # change channel to the one associated with
                             the 'psy' key (di.fm)
 
 USAGE
