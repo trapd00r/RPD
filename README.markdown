@@ -1,14 +1,15 @@
-radiod
-===========
-radiod: Daemon using mplayer for playing radio streams
+Radio Playing Daemon
+====================
+RPD is a daemon that plays radio streams.
 
-radioc: Client for talking to the daemon; change stream, pause, 
-change volume etc
+Mplayer is used for the actual backend, providing the user with total control.
 
-  srnp: now playing information for sveriges radio
+Radio Playing Client
+====================
 
+RPC is the program for controlling Radio Playing Daemon (RPD).
 
-    Usage: radioc [OPTIONS] (ARGS) 
+    Usage: rpc [OPTIONS] (ARGS) 
 
     OPTIONS:
         np      show the currently playing song
@@ -22,21 +23,28 @@ change volume etc
         quit    stops playback (and radiod)
 
     EXAMPLES:
-        radioc change psy   # change channel to the one associated with
-                              the 'psy' key (di.fm)
+        rpc change psy   # change channel to the one associated with
+                           the 'psy' key (di.fm)
 
 
 Installation
 ============
-First, you'll need some modules;
-    # cpan App::Daemon LWP::Simple XML::Simple
+First, you'll a module from CPAN:
+    # cpan Working::Daemon
 
-Then, just run;
+Then grab the 'now playing'-module:
+    $ git clone git://github.com/trapd00r/Mplayer-Stream-NowPlaying.git
+    $ cd Mplayer-Stream-NowPlaying
     $ perl Makefile.PL
     $ make
     # make install
 
-Start radiod and enjoy.
+Now you can install RPD and RPC:
+    $ perl Makefile.PL
+    $ make
+    # make install
+
+Start RPD and enjoy.
 License
 =======
 Copyright (C) 2010 Magnus Woldrich
