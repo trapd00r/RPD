@@ -63,9 +63,9 @@ $options = {
              },
   change  => sub {
                fifo_w('loadfile', geturi($arg));
-               print "Playing ", getchname($arg), "\n   From: ", geturi($arg), "\n";
-               sleep 2;
-               print $options->{np}->();
+               print "Playing: ", getchname($arg), "\n   From: ", geturi($arg), "\n";
+               sleep 2.5;
+               $options->{np}->();
              },
   np      => sub {
                my $info = stream_np();
