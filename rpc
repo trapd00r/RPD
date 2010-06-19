@@ -1,4 +1,6 @@
 #!/usr/bin/perl
+our $APP = 'Radio Playing Client';
+our $VERSION = 0.3;
 =rpc
   Radio Playing Client
 
@@ -9,13 +11,22 @@
 use strict;
 use RPD::URI qw(geturi listchans getchname);
 use Mplayer::Stream::NowPlaying qw(nowplaying);
+use Mplayer::NowPlaying qw(stream_np $np_log);
 use Data::Dumper;
 
 my $options; 
-my $action = shift;
-my $arg    = shift;
-my $pipe_w = "$ENV{HOME}/.mplayer/rpd.fifo";
-my $log    = "$ENV{HOME}/.mplayer/rpd.log";
+my $action  = shift;
+my $arg     = shift;
+my $pipe_w  = "$ENV{HOME}/.mplayer/rpd.fifo";
+my $log     = "$ENV{HOME}/.mplayer/rpd.log";
+$np_log     = $log;
+my $rpd_pid = '/tmp/rpd.pid';
+
+if(!-f $rpd_pid) {
+  print "RPD is not running, starting...\n";
+  system("rpd psy") == 0 or print "RPD could not start. $!\n";
+  exit 0;
+}
 
 if(!-e $log) {
   open(my $fh,'>',$log) or die "Cant create $log: $!";
@@ -23,29 +34,51 @@ if(!-e $log) {
 
 
 $options = {
-  quit    => sub {fifo_w($action);},
-  stop    => sub {fifo_w('pause');}, # stop kills the player
-  pause   => sub {fifo_w($action);},
-  son     => sub {fifo_w($action);},
-  soff    => sub {fifo_w($action);},
-  np      => sub {print nowplaying($log, 'current'), "\n";},
-  help    => sub {printf("%-15s\n",$_) for sort(keys %{$options});},
-  list    => sub {listchans();},
-  'help++'=> sub {usage();},
-  npa     => sub {
-    my $info = nowplaying($log,'all');
-    for my $oldnp(@{$info}) {
-      print "$oldnp\n";
-    }
-  },
+  quit    => sub {
+               fifo_w($action);
+               unlink($rpd_pid) 
+                 or print "Cant unlink $rpd_pid: $! Please remove $rpd_pid.\n";
+             },
+               
+  stop    => sub {
+                fifo_w('pause');
+              },
+  pause   => sub {
+               fifo_w($action);
+             },
+  son     => sub {
+               fifo_w($action);
+             },
+  soff    => sub {
+               fifo_w($action);
+             },
+  help    => sub {
+               printf("%-15s\n",$_) for sort(keys %{$options});
+             },
+  list    => sub {
+               listchans();
+             },
+  'help++'=> sub {
+               usage();
+             },
   change  => sub {
-    fifo_w('loadfile', geturi($arg));
-    print "Playing ", getchname($arg), "\n   From: ", geturi($arg), "\n";
-    sleep 2;
-    print "       "; $options->{np}->();
-  },
-};
+               fifo_w('loadfile', geturi($arg));
+               print "Playing ", getchname($arg), "\n   From: ", geturi($arg), "\n";
+               sleep 2;
+               print $options->{np}->();
+             },
+  np      => sub {
+               my $info = stream_np();
+               my ($bold, $italic, $normal, $red) = ("\033[1m",
+                 "\033[3m","\033[0m", "\033[34;1m");
+               printf("%7s: $bold%.70s$normal\n", 'Track',$info->{title});
+               printf("%7s: $red%.70s$normal\n", 'Genre',$info->{genre});
+               printf("%7s: %.70s\n", 'Bitrate', $info->{bitrate});
+               printf("%7s: %.70s\n", 'Channel', $info->{name});
+               printf("%7s: %.70s\n", 'Website', $info->{website});
 
+             },
+};
 
 $options->{'help++'}->() unless $action;
 defined $options->{$action} && $options->{$action}->();
@@ -58,27 +91,23 @@ sub fifo_w {
 }
 
 
-
-
-
 sub usage {
   print << "USAGE";
+  $APP $VERSION
   Usage: rpc [OPTIONS] (ARGS) 
 
   OPTIONS:
       np      show the currently playing song
-      npa     show all played songs since RPD started
       change  change channel
       list    list all available channels
       son     turn on sound
       soff    turn off sound
       pause   pause playback
       stop    pauses playback. If you really want to stop, use quit
-      quit    stops playback (and RPD)
+      quit    stops RPD
 
   EXAMPLES:
-      rpc change psy   # change channel to the one associated with
-                            the 'psy' key (di.fm)
+      rpc change psy
 
 USAGE
 }
