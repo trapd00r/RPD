@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
-$APP     = 'RPD';
-$VERSION = 0.1;
+our $APP     = 'RPD';
+our $VERSION = 0.3;
 
 =rpd
   Radio Playing Daemon
@@ -10,44 +10,74 @@ $VERSION = 0.1;
 
 =cut
 
-
 use strict;
 use Radiod::URI qw(geturi listchans);
 use Working::Daemon;
 
-my $fifo    = "$ENV{HOME}/.mplayer/rpd.fifo";
-my $append  = 1; # if non-zero, RPD will append to an existing log
-my $cmd     = 'mplayer -cache 400 -identify -idle ';
-my $cmdOpts = "-slave -input file=$fifo";
-my $log     = "$ENV{HOME}/.mplayer/rpd.log";
+my $chan = shift;
 
-if(-p $fifo) {
-  print "FIFO found - all good.\n\n";
-}
-else {
+my $log      = "$ENV{HOME}/.mplayer/rpd.log";
+my $fifo     = "$ENV{HOME}/.mplayer/rpd.fifo";
+my $pidfile  = '/tmp/rpd.pid';
+my $append   = 0;
+my $cmd      = 'mplayer -cache 400 -identify -idle ';
+my $cmd_opt  = "-slave -input file=$fifo";
+my $chan_url = undef;
+
+if(!-p $fifo) {
   require POSIX;
-  POSIX::mkfifo($fifo, 0666)
-    or die "Can not make fifo: $fifo $!";
+  POSIX::mkfifo($fifo, 0666) or die "Cant mkfifo $fifo: $!";
 }
 
-listchans();
-print "\nStation: ";
-chomp(my $choice = <STDIN>);
+if($chan eq '-l' or $chan eq '--list') {
+  listchans();
+  exit 0;
+}
 
-my $loadStation = geturi($choice) // geturi('dingata'); # default
-
-
-daemonize();
-
-if($append != 0) {
-  system("$cmd $cmdOpts $loadStation &>> $log") == 0 or die;
+if(defined(geturi($chan))) {
+  $chan_url = geturi($chan);
+  play($chan_url);
 }
 else {
-  system("$cmd $cmdOpts $loadStation &> $log") == 0 or die; 
+  if(!$chan) { # no args
+    usage();
+  }
+  else { # arg is invalid
+    # We have already shifted of a value from @ARGV
+    printf("Invalid argument%s\n",  (@ARGV > 0) ? 's' : '');
+  }
+}
+
+sub play {
+  my $station = shift;
+  croak("Provide a station") unless $station;
+  daemonize();
+  if($append != 0) {
+    system("$cmd $cmd_opt $chan_url &>> $log");
+  }
+  else {
+    system("$cmd $cmd_opt $chan_url &> $log");
+  }
+}
+
+sub usage {
+  print << "USAGE";
+  $APP $VERSION
+  Usage: rpd [OPTIONS] (STATION)
+
+  OPTIONS
+    -l, --list     list channels
+
+
+USAGE
 }
 
 sub daemonize {
+  open(my $pid, '>', $pidfile) or croak("Cant create pidfile $pidfile");
+  print $pid $$;
+  close($pid);
+
   my $daemon = Working::Daemon->new;
-  $daemon->name('radiod');
+  $daemon->name('Radio Playing Daemon');
   $daemon->do_action;
 }
