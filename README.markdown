@@ -33,8 +33,8 @@ First, you'll a module from CPAN:
     # cpan Working::Daemon
 
 Then grab the 'now playing'-module:
-    $ git clone git://github.com/trapd00r/Mplayer-Stream-NowPlaying.git
-    $ cd Mplayer-Stream-NowPlaying
+    $ git clone git://github.com/trapd00r/Mplayer-NowPlaying.git
+    $ cd Mplayer-NowPlaying
     $ perl Makefile.PL
     $ make
     # make install
