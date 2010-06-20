@@ -78,6 +78,12 @@ $options = {
                printf("%7s: %.70s\n", 'Website', $info->{website});
 
              },
+  npi       => sub {
+                 my $info = stream_np();
+                 printf("%s [%s] (%s)",
+                   $info->{title}, $info->{genre}, $info->{website});
+
+  },
 };
 
 $options->{'help++'}->() unless $action;
@@ -98,6 +104,7 @@ sub usage {
 
   OPTIONS:
       np      show the currently playing song
+      npi     show the currently playing song on one line
       play    play/switch to channel
       list    list all available channels
       son     turn on sound
