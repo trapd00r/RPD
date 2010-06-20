@@ -1,14 +1,23 @@
 #!/usr/bin/perl
+# RPD - Radio Playing Daemon
+# Copyright (C) 2010 Magnus Woldrich <trapd00r@trapd00r.se>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###############################################################################
 
-our $APP     = 'RPD';
+our $APP     = 'Radio Playing Daemon';
 our $VERSION = 0.3;
-
-=rpd
-  Radio Playing Daemon
-
-  A daemon for playing radio streams
-
-=cut
 
 use strict;
 use Radiod::URI qw(geturi listchans);
@@ -35,9 +44,9 @@ if($chan eq '-l' or $chan eq '--list') {
 }
 
 if(defined(geturi($chan))) {
-  $chan_url = geturi($chan);
-  play($chan_url);
+  play(geturi($chan));
 }
+
 else {
   if(!$chan) { # no args
     usage();
@@ -67,7 +76,6 @@ sub usage {
 
   OPTIONS
     -l, --list     list channels
-
 
 USAGE
 }
