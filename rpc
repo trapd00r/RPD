@@ -93,11 +93,12 @@ $options = {
       }
     }
 
-    printf("$bold$blue%7s$normal: $bold%.70s$normal\n", 'title', $info->{title});
+    printf("$bold$blue%7s$normal: $bold%.70s$normal\n", 'title', $info->{title})
+      unless $info->{title} eq '';
     printf("$blue%7s$normal: %.70s\n", 'bitrate', $bitrate);
     for(qw(genre name website)) {
       printf("$blue%7s$normal: %.70s\n", $_, $info->{$_})
-        unless !defined($info->{$_});
+        unless !defined($info->{$_}) or $info->{$_} eq '';
       }
   },
 
@@ -110,7 +111,7 @@ $options = {
   fav         => sub {
     my $info = stream_np();
     open(my $fh, '>>', $favtracks) or die "Cant append data to $favtracks: $!";
-    print $fh $info->{title}, "\n";
+    print $fh $info->{title}, "\n" unless $info->{title} eq '';
     close($fh);
   },
 };
