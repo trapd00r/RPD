@@ -20,7 +20,7 @@ our $APP     = 'Radio Playing Daemon';
 our $VERSION = 0.3;
 
 use strict;
-use Radiod::URI qw(geturi listchans);
+use RPD::URI qw(geturi listchans);
 use Working::Daemon;
 
 my $chan = shift;
@@ -33,6 +33,10 @@ my $cmd      = 'mplayer -cache 400 -identify -idle ';
 my $cmd_opt  = "-slave -input file=$fifo";
 my $chan_url = undef;
 
+if(-f $pidfile) {
+  print "RPD already active!\n";
+  exit 1;
+}
 if(!-p $fifo) {
   require POSIX;
   POSIX::mkfifo($fifo, 0666) or die "Cant mkfifo $fifo: $!";
@@ -44,7 +48,8 @@ if($chan eq '-l' or $chan eq '--list') {
 }
 
 if(defined(geturi($chan))) {
-  play(geturi($chan));
+  $chan_url = geturi($chan);
+  play($chan_url);
 }
 
 else {
@@ -67,6 +72,7 @@ sub play {
   else {
     system("$cmd $cmd_opt $chan_url &> $log");
   }
+  unlink($pidfile) or die $!;
 }
 
 sub usage {

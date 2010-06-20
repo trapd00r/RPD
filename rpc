@@ -21,7 +21,6 @@ our $VERSION = 0.3;
 
 use strict;
 use RPD::URI qw(geturi listchans getchname);
-use Mplayer::Stream::NowPlaying qw(nowplaying);
 use Mplayer::NowPlaying qw(stream_np $np_log);
 use Data::Dumper;
 
@@ -68,7 +67,6 @@ $options = {
   },
 
   help      => sub {
-    printf("%-15s\n", $_) for(sort(keys %{$options}));
     usage();
   },
 
