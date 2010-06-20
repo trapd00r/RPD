@@ -25,12 +25,13 @@ use Mplayer::NowPlaying qw(stream_np $np_log);
 use Data::Dumper;
 
 my $options; 
-my $action  = shift;
-my $arg     = shift;
-my $pipe_w  = "$ENV{HOME}/.mplayer/rpd.fifo";
-my $log     = "$ENV{HOME}/.mplayer/rpd.log";
-$np_log     = $log;
-my $rpd_pid = '/tmp/rpd.pid';
+my $action    = shift;
+my $arg       = shift;
+my $pipe_w    = "$ENV{HOME}/.mplayer/rpd.fifo";
+my $log       = "$ENV{HOME}/.mplayer/rpd.log";
+my $favtracks = "$ENV{HOME}/.mplayer/rpd.fav";
+$np_log       = $log;
+my $rpd_pid   = '/tmp/rpd.pid';
 
 if(!-f $rpd_pid) {
   print "RPD is not running, starting...\n";
@@ -106,6 +107,12 @@ $options = {
     sleep 3;
     $options->{np}->();
   },
+  fav         => sub {
+    my $info = stream_np();
+    open(my $fh, '>>', $favtracks) or die "Cant append data to $favtracks: $!";
+    print $fh $info->{title}, "\n";
+    close($fh);
+  },
 };
 
 
@@ -130,6 +137,7 @@ sub usage {
       npi     show the currently playing song on one line
       play    play/switch to channel
       list    list all available channels
+      fav     add track to the favlist
       son     turn on sound
       soff    turn off sound
       toggle  toggle playback status, pause/play
