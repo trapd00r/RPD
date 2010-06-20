@@ -83,6 +83,7 @@ $options = {
 
   np        => sub {
     my $info = stream_np();
+    print Dumper $info;
     my ($bold, $normal, $blue, $red) =
       ("\033[1m", "\033[0m", "\033[34;1m", "\033[31m");
     my $bitrate = $info->{bitrate};
@@ -93,7 +94,7 @@ $options = {
       }
     }
 
-    printf("$bold$blue%7s$normal: $bold%.70s$normal\n", 'title', $info->{title})
+    printf("$bold$blue%7s$normal: $bold%.70s$normal\n", 'title',$info->{title})
       unless $info->{title} eq '';
     printf("$blue%7s$normal: %.70s\n", 'bitrate', $bitrate);
     for(qw(genre name website)) {
