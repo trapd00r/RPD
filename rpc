@@ -43,8 +43,8 @@ $options = {
   stop    => sub {
                 fifo_w('pause');
               },
-  pause   => sub {
-               fifo_w($action);
+  toggle  => sub {
+               fifo_w('pause');
              },
   son     => sub {
                fifo_w($action);
@@ -109,7 +109,7 @@ sub usage {
       list    list all available channels
       son     turn on sound
       soff    turn off sound
-      pause   pause playback
+      toggle  toggle playback status, pause/play
       stop    pauses playback. If you really want to stop, use quit
       quit    stops RPD
 
