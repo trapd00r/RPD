@@ -1,12 +1,23 @@
 #!/usr/bin/perl
+# RPC - Radio Playing Client
+# Copyright (C) 2010 Magnus Woldrich <trapd00r@trapd00r.se>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###############################################################################
+
 our $APP = 'Radio Playing Client';
 our $VERSION = 0.3;
-=rpc
-  Radio Playing Client
-
-  Program for controlling Radio Playing Daemon (RPD)
-
-=cut
 
 use strict;
 use RPD::URI qw(geturi listchans getchname);
@@ -35,58 +46,72 @@ if(!-e $log) {
 
 $options = {
   quit    => sub {
-               fifo_w($action);
-               unlink($rpd_pid) 
-                 or print "Cant unlink $rpd_pid: $! Please remove $rpd_pid.\n";
-             },
-               
+    fifo_w($action);
+    unlink($rpd_pid) 
+      or print "Cant unlink $rpd_pid: $!. Please remove $rpd_pid.\n";
+  },
+
   stop    => sub {
-                fifo_w('pause');
-              },
-  toggle  => sub {
-               fifo_w('pause');
-             },
-  son     => sub {
-               fifo_w($action);
-             },
-  soff    => sub {
-               fifo_w($action);
-             },
-  help    => sub {
-               printf("%-15s\n",$_) for sort(keys %{$options});
-             },
-  list    => sub {
-               listchans();
-             },
-  'help++'=> sub {
-               usage();
-             },
-  play    => sub {
-               fifo_w('loadfile', geturi($arg));
-               print "Playing: ", getchname($arg), "\n   From: ", geturi($arg), "\n";
-               sleep 2.5;
-               $options->{np}->();
-             },
-  np      => sub {
-               my $info = stream_np();
-               my ($bold, $italic, $normal, $red) = ("\033[1m",
-                 "\033[3m","\033[0m", "\033[34;1m");
-               printf("%7s: $bold%.70s$normal\n", 'Track',$info->{title});
-               printf("%7s: $red%.70s$normal\n", 'Genre',$info->{genre});
-               printf("%7s: %.70s\n", 'Bitrate', $info->{bitrate});
-               printf("%7s: %.70s\n", 'Channel', $info->{name});
-               printf("%7s: %.70s\n", 'Website', $info->{website});
+    fifo_w('pause');
+  },
+  
+  toggle   => sub {
+    fifo_w('pause');
+  },
 
-             },
+  son      => sub {
+    fifo_w('mute 0');
+  },
+
+  soff      => sub {
+    fifo_w('mute 1');
+  },
+
+  help      => sub {
+    printf("%-15s\n", $_) for(sort(keys %{$options}));
+    usage();
+  },
+
+  list      => sub {
+    listchans();
+  },
+
   npi       => sub {
-                 my $info = stream_np();
-                 printf("%s [%s] (%s)",
-                   $info->{title}, $info->{genre}, $info->{website});
+    my $info = stream_np();
+    printf("%s [%s] (%s)",
+      $info->{title}, $info->{genre}, $info->{website});
+  },
 
+  np        => sub {
+    my $info = stream_np();
+    my ($bold, $normal, $blue, $red) =
+      ("\033[1m", "\033[0m", "\033[34;1m", "\033[31m");
+    my $bitrate = $info->{bitrate};
+
+    if($bitrate =~ m/^([0-9]+)/) {
+      if($1 < 160) {
+        $bitrate = "$red$1$normal kbps";
+      }
+    }
+
+    printf("$bold$blue%7s$normal: $bold%.70s$normal\n", 'title', $info->{title});
+    printf("$blue%7s$normal: %.70s\n", 'bitrate', $bitrate);
+    for(qw(genre name website)) {
+      printf("$blue%7s$normal: %.70s\n", $_, $info->{$_})
+        unless !defined($info->{$_});
+      }
+  },
+
+  play       => sub {
+    fifo_w('loadfile', geturi($arg));
+    print 'Playing: ', getchname($arg), "\n   From: ", geturi($arg), "\n";
+    sleep 3;
+    $options->{np}->();
   },
 };
 
-$options->{'help++'}->() unless $action;
+
+$options->{'help'}->() unless $action;
 defined $options->{$action} && $options->{$action}->();
 
 sub fifo_w {
