@@ -61,7 +61,7 @@ $options = {
   'help++'=> sub {
                usage();
              },
-  change  => sub {
+  play    => sub {
                fifo_w('loadfile', geturi($arg));
                print "Playing: ", getchname($arg), "\n   From: ", geturi($arg), "\n";
                sleep 2.5;
@@ -98,7 +98,7 @@ sub usage {
 
   OPTIONS:
       np      show the currently playing song
-      change  change channel
+      play    play/switch to channel
       list    list all available channels
       son     turn on sound
       soff    turn off sound
@@ -107,7 +107,7 @@ sub usage {
       quit    stops RPD
 
   EXAMPLES:
-      rpc change psy
+      rpc play psy
 
 USAGE
 }
