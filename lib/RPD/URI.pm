@@ -92,10 +92,6 @@ our %channels = (
     name => 'Chromomanova - Psychedelic',
     uri  => 'http://85.25.86.69:8000/listen.pls',
   },
-  psy6       => {
-    name => 'Philosomatika - Psychedelic',
-    uri  => 'http://yp.shoutcast.com/sbin/tunein-station.pls?id=5628',
-  },
   kohina     => {
     name => 'Kohina - Chiptunes',
     uri  => 'http://www.kohina.com/kohinasolanum.m3u',
@@ -136,14 +132,19 @@ our %channels = (
     name => "Hits from the 90's",
     uri  => 'http://www.shoutcast.com/sbin/tunein-station.pls?id=4384&t=.pls',
   },
-  dnb2    => {
+  dnb2      => {
     name => 'Drum and Bass Radio',
     uri  => 'http://www.dnbradio.com/hi.m3u',
   },
-  cvgm    => {
+  cvgm      => {
     name => 'cvgm.net - Video Game and Demo Music',
     uri  => 'http://de.cvgm.net/cvgm128.mp3',
   },
+  80        => {
+    name  => "Kickback 80's",
+    uri   => 'mms://85.10.128.74/kr80s',
+  },
+
 );
 
 sub geturi {
