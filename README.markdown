@@ -9,22 +9,23 @@ Radio Playing Client
 
 RPC is the program for controlling Radio Playing Daemon (RPD).
 
-    Usage: rpc [OPTIONS] (ARGS) 
+  Usage: rpc [OPTIONS] (ARGS) 
 
-    OPTIONS:
-        np      show the currently playing song
-        npa     show all played songs since radiod started
-        change  change channel
-        list    list all available channels
-        son     turn on sound
-        soff    turn off sound
-        pause   pause playback
-        stop    pauses playback. If you really want to stop, use quit
-        quit    stops playback (and radiod)
+  OPTIONS:
+      np      show the currently playing song
+      npi     show the currently playing song on one line
+      play    play/switch to channel
+      list    list all available channels
+      fav     add track to the favlist
+      shfav   show favorites
+      son     turn on sound
+      soff    turn off sound
+      toggle  toggle playback status, pause/play
+      stop    pauses playback. If you really want to stop, use quit
+      quit    stops RPD
 
-    EXAMPLES:
-        rpc change psy   # change channel to the one associated with
-                           the 'psy' key (di.fm)
+  EXAMPLES:
+      rpc play psy
 
 
 Installation
