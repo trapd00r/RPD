@@ -52,19 +52,19 @@ $options = {
   },
 
   stop    => sub {
-    fifo_w('pause');
+    fifo_w('pause') && print "Toggled!\n";
   },
   
   toggle   => sub {
-    fifo_w('pause');
+    fifo_w('pause') && print "Toggled!\n";
   },
 
   son      => sub {
-    fifo_w('mute 0');
+    fifo_w('mute 0') && print "Sound off!\n";
   },
 
   soff      => sub {
-    fifo_w('mute 1');
+    fifo_w('mute 1') && print "Sound on!\n";
   },
 
   help      => sub {
@@ -95,7 +95,8 @@ $options = {
 
     printf("$bold$blue%7s$normal: $bold%.70s$normal\n", 'title',$info->{title})
       unless $info->{title} eq '';
-    printf("$blue%7s$normal: %.70s\n", 'bitrate', $bitrate);
+    printf("$blue%7s$normal: %.70s\n", 'bitrate', $bitrate)
+      unless $bitrate eq '';
     for(qw(genre name website)) {
       printf("$blue%7s$normal: %.70s\n", $_, $info->{$_})
         unless !defined($info->{$_}) or $info->{$_} eq '';
@@ -107,13 +108,30 @@ $options = {
     print 'Playing: ', getchname($arg), "\n   From: ", geturi($arg), "\n";
     sleep 3;
     $options->{np}->();
+    
+    exit(0);
   },
   fav         => sub {
     my $info = stream_np();
     open(my $fh, '>>', $favtracks) or die "Cant append data to $favtracks: $!";
-    print $fh $info->{title}, "\n" unless $info->{title} eq '';
+    print($fh $info->{title}, "\n") unless $info->{title} eq '';
     close($fh);
+    yell($info->{title});
+    print ' from ';
+    yell($info->{website});
+    print ' >> ';
+    yell("$favtracks\n");
+
+    exit(0);
+      
   },
+  shfav        => sub {
+    open(my $fh, '<', $favtracks) or die "Cant read data from $favtracks: $!";
+    my @favs = <$fh>;
+    close($fh);
+
+    yell(@favs);
+  }
 };
 
 
@@ -127,6 +145,11 @@ sub fifo_w {
   print {$fh} "$action $arg\n";
 }
 
+sub yell {
+  my @text = @_;
+  map{$_ = "\033[1m$_\033[0m"} @text;
+  print @text;
+}
 
 sub usage {
   print << "USAGE";
@@ -139,6 +162,7 @@ sub usage {
       play    play/switch to channel
       list    list all available channels
       fav     add track to the favlist
+      shfav   show favorites
       son     turn on sound
       soff    turn off sound
       toggle  toggle playback status, pause/play
