@@ -17,30 +17,30 @@
 ###############################################################################
 
 our $APP     = 'Radio Playing Daemon';
-our $VERSION = 0.3;
+our $VERSION = 0.4;
 
 use strict;
 use RPD::URI qw(geturi listchans);
-use Working::Daemon;
 
-my $chan = shift;
+my $chan = shift // 'moh'; # Masters of Hardcore
 
 my $log      = "$ENV{HOME}/.mplayer/rpd.log";
 my $fifo     = "$ENV{HOME}/.mplayer/rpd.fifo";
 my $pidfile  = '/tmp/rpd.pid';
-my $append   = 0;
-my $cmd      = 'mplayer -cache 400 -identify -idle ';
-my $cmd_opt  = "-slave -input file=$fifo";
+my $player   = 'mplayer';
+my @playopt  = (' -cache 400', '-quiet', '-identify', '-idle', '-input', "file=$fifo");
 my $chan_url = undef;
 
 if(-f $pidfile) {
-  print "RPD already active!\n";
+  print "RPD is already running, exiting...\n";
   exit 1;
 }
+
 if(!-p $fifo) {
   require POSIX;
-  POSIX::mkfifo($fifo, 0666) or die "Cant mkfifo $fifo: $!";
+  POSIX::mkfifo($fifo, 0666) or croak("Cant mkfifo $fifo:  $!");
 }
+
 
 if($chan eq '-l' or $chan eq '--list') {
   listchans();
@@ -49,9 +49,9 @@ if($chan eq '-l' or $chan eq '--list') {
 
 if(defined(geturi($chan))) {
   $chan_url = geturi($chan);
+  print $chan_url;
   play($chan_url);
 }
-
 else {
   if(!$chan) { # no args
     usage();
@@ -63,16 +63,10 @@ else {
 }
 
 sub play {
-  my $station = shift;
-  croak("Provide a station") unless $station;
+  my $station = shift(@_);
+  croak("Provide a station") unless($station);
   daemonize();
-  if($append != 0) {
-    system("$cmd $cmd_opt $chan_url &>> $log");
-  }
-  else {
-    system("$cmd $cmd_opt $chan_url &> $log");
-  }
-  unlink($pidfile) or die $!;
+  exec($player, @playopt, $station);
 }
 
 sub usage {
@@ -87,11 +81,27 @@ USAGE
 }
 
 sub daemonize {
-  open(my $pid, '>', $pidfile) or croak("Cant create pidfile $pidfile");
-  print $pid $$;
-  close($pid);
+  use POSIX 'setsid';
+  my $PID = fork();
+  exit(0) if($PID); # parent
+  exit(1) if(!defined($PID)); # out of resources 
 
-  my $daemon = Working::Daemon->new;
-  $daemon->name('Radio Playing Daemon');
-  $daemon->do_action;
+  setsid();
+  $PID = fork();
+  exit(1) if(!defined($PID)); 
+
+  if($PID) {
+    waitpid($PID, 0);
+    unlink($pidfile) and print "\n\nMMMMMMMMMMMMM\n\n";
+    exit(0);
+  }
+  elsif($PID == 0) {
+    open(my $pid, '>', $pidfile) or croak("Cant create pidfile $pidfile: $!");
+    print $pid $$; 
+    close($pid);
+
+    open(STDOUT, '>', $log);
+    open(STDERR, '>', '/dev/null');
+    open(STDIN,  '<', '/dev/null');
+  }
 }
