@@ -25,17 +25,16 @@ use Mplayer::NowPlaying qw(stream_np $np_log);
 use Data::Dumper;
 
 my $options; 
-my $action    = shift;
-my $arg       = shift;
+my($action,$arg) = @ARGV;
 my $pipe_w    = "$ENV{HOME}/.mplayer/rpd.fifo";
 my $log       = "$ENV{HOME}/.mplayer/rpd.log";
 my $favtracks = "$ENV{HOME}/.mplayer/rpd.fav";
 $np_log       = $log;
 my $rpd_pid   = '/tmp/rpd.pid';
 
-if(!-f $rpd_pid) {
+if(!(-f $rpd_pid)) {
   print "RPD is not running, starting...\n";
-  system("rpd psy") == 0 or print "RPD could not start. $!\n";
+  system("rpd") == 0 or print "RPD could not start. $!\n";
   exit 0;
 }
 
@@ -131,7 +130,20 @@ $options = {
     close($fh);
 
     yell(@favs);
-  }
+  },
+  kill          => sub {
+    open(my $fh, '<', $rpd_pid) or croak("Cant open $rpd_pid: $!");
+    my $target = <$fh>;
+    close($fh);
+    if(kill(9, $target)) {
+      print "RPD ($target) have been killed\n";
+      unlink($rpd_pid);
+      exit(0);
+    }
+    else {
+      print "Could not kill $target: $!\n";
+    }
+  },
 };
 
 
@@ -139,8 +151,7 @@ $options->{'help'}->() unless $action;
 defined $options->{$action} && $options->{$action}->();
 
 sub fifo_w {
-  my $action = shift;
-  my $arg    = shift;
+  my($action,$arg) = @_;
   open(my $fh, '>', $pipe_w) or die "Can not open $pipe_w for writing: $!";
   print {$fh} "$action $arg\n";
 }
