@@ -26,7 +26,7 @@ use Data::Dumper;
 
 my $options; 
 my($action,$arg) = @ARGV;
-my $pipe_w    = "$ENV{HOME}/.mplayer/rpd.fifo";
+my $pipe_w    = "$ENV{HOME}/.mplayer/mplayer.fifo";
 my $log       = "$ENV{HOME}/.mplayer/rpd.log";
 my $favtracks = "$ENV{HOME}/.mplayer/rpd.fav";
 $np_log       = $log;
@@ -103,11 +103,18 @@ $options = {
   },
 
   play       => sub {
-    fifo_w('loadfile', geturi($arg));
-    print 'Playing: ', getchname($arg), "\n   From: ", geturi($arg), "\n";
-    sleep 3;
+    my $stream = undef;
+    if(!defined(geturi($arg))) {
+      $stream = $arg; # arbitary urls..
+    }
+    else {
+      $stream = geturi($arg);
+    }
+    fifo_w('loadfile', $stream);
+    #print 'Playing: ', getchname($arg), "\n   From $stream\n";
+    sleep 2;
     $options->{np}->();
-    
+
     exit(0);
   },
   fav         => sub {
