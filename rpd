@@ -25,10 +25,12 @@ use RPD::URI qw(geturi listchans);
 my $chan = shift // 'moh'; # Masters of Hardcore
 
 my $log      = "$ENV{HOME}/.mplayer/rpd.log";
-my $fifo     = "$ENV{HOME}/.mplayer/rpd.fifo";
+my $fifo     = "$ENV{HOME}/.mplayer/mplayer.fifo";
 my $pidfile  = '/tmp/rpd.pid';
 my $player   = 'mplayer';
-my @playopt  = (' -cache 400', '-quiet', '-identify', '-idle', '-input', "file=$fifo");
+my @playopt  = (' -cache 400', '-quiet', '-identify',
+                '-idle', '-input', "file=$fifo"
+              );
 my $chan_url = undef;
 
 if(-f $pidfile) {
