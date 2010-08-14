@@ -1,7 +1,7 @@
 package RPD::URI;
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT_OK = qw(geturi listchans getchname);
+@EXPORT_OK = qw(geturi listchans getchname getchans);
 
 our %channels = (
   p1        => {
@@ -156,6 +156,10 @@ sub geturi {
 sub getchname {
   my $chname = shift;
   return $channels{$chname}->{name};
+}
+
+sub getchans {
+  return \%channels;
 }
 
 sub listchans { #FIXME
