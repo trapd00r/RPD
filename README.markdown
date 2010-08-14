@@ -30,10 +30,7 @@ RPC is the program for controlling Radio Playing Daemon (RPD).
 
 Installation
 ============
-First, you'll a module from CPAN:
-    # cpan Working::Daemon
-
-Then grab the 'now playing'-module:
+Grab the 'now playing'-module:
     $ git clone git://github.com/trapd00r/Mplayer-NowPlaying.git
     $ cd Mplayer-NowPlaying
     $ perl Makefile.PL
